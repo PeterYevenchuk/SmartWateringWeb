@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import Switch from 'react-switch';
 import React, { useEffect, useState } from 'react';
 import '../mainPageComponent/mainPageComponent.css'
-import axios from 'axios';
+import axios, { all } from 'axios';
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -38,6 +38,8 @@ const MainPage = () => {
   const [isCheckedSprinkler, setIsCheckedSprinkler] = useState(false);
   const [isCheckedAutoMode, setIsCheckedAutoMode] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [notifications, setNotifications] = useState([]);
 
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
@@ -88,6 +90,40 @@ const MainPage = () => {
       });
   };
 
+  // useEffect(() => {
+  //   const handleServerEvents = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     setNotifications(data);
+  //     setUnreadNotifications(data.length);
+
+  //     localStorage.setItem('notifications', JSON.stringify(data));
+  //   };
+  
+  //   const eventSource = new EventSource(`https://localhost:7265/events/14`); //change id
+  //   eventSource.onmessage = handleServerEvents;
+  
+  //   return () => {
+  //     eventSource.close();
+  //   };
+  // }, []);
+
+  // const renderNotifications = () => {
+  //   return (
+  //     <div>
+  //       <p>{`${notifications.DayTimeZone + notifications.DateTime}`}</p>
+  //       <p>{`${notifications.Message}`}</p>
+  //     </div>
+  //   );
+  // };
+
+  // const markAllAsRead = () => {
+  //   setUnreadNotifications(0);
+  // };
+
+  // const deleteAllMessages = () => {
+    
+  // };
+
   return (
     <div>
       <Footer />
@@ -129,16 +165,16 @@ const MainPage = () => {
         <div className='notifications-box'>
           <div class="notification" onClick={toggleNotifications}>
             <span>Inbox</span>
-            <span class="badge">3</span>
+            <span className="badge">{unreadNotifications}</span>
           </div>
         </div>
         <div className='messages-box'>
-        `{showNotifications && (
+          {showNotifications && (
             <div className="messages">
-              <p>Notification 1</p>
-              <p>Notification 2</p>
-              <p>Notification 3</p>
-              <p>Notification 4</p>
+              {/* {renderNotifications()}
+              {unreadNotifications !== 0 &&
+                <button onClick={markAllAsRead}>Mark all as read</button>}
+              <button onClick={deleteAllMessages}>Delete all</button> */}
             </div>
           )}
         </div>
