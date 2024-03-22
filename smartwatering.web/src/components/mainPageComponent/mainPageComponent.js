@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import Switch from 'react-switch';
 import React, { useEffect, useState } from 'react';
 import '../mainPageComponent/mainPageComponent.css'
-import axios, { all } from 'axios';
+import axios from 'axios';
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -40,6 +40,14 @@ const MainPage = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const savedNotifications = localStorage.getItem('notifications');
+    if (savedNotifications) {
+      setNotifications(JSON.parse(savedNotifications));
+      setUnreadNotifications(JSON.parse(savedNotifications).length);
+    }
+  }, []);
 
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
@@ -90,39 +98,54 @@ const MainPage = () => {
       });
   };
 
-  // useEffect(() => {
-  //   const handleServerEvents = (event) => {
-  //     const data = JSON.parse(event.data);
-  //     setNotifications(data);
-  //     setUnreadNotifications(data.length);
+  useEffect(() => {
+    const handleServerEvents = (event) => {
+      const data = JSON.parse(event.data);
+      setNotifications(prevNotifications => [...prevNotifications, data]);
+      setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications + 1);
 
-  //     localStorage.setItem('notifications', JSON.stringify(data));
-  //   };
+      localStorage.setItem('notifications', JSON.stringify([...notifications, data]));
+    };
   
-  //   const eventSource = new EventSource(`https://localhost:7265/events/14`); //change id
-  //   eventSource.onmessage = handleServerEvents;
+    const eventSource = new EventSource(`https://localhost:7265/events/14`); //change id
+    eventSource.onmessage = handleServerEvents;
   
-  //   return () => {
-  //     eventSource.close();
-  //   };
-  // }, []);
+    eventSource.onerror = (error) => {
+      console.error('Connection error:', error);
+      eventSource.close();
+    };
 
-  // const renderNotifications = () => {
-  //   return (
-  //     <div>
-  //       <p>{`${notifications.DayTimeZone + notifications.DateTime}`}</p>
-  //       <p>{`${notifications.Message}`}</p>
-  //     </div>
-  //   );
-  // };
+    return () => {
+      eventSource.close();
+    };
+  }, [notifications]);
 
-  // const markAllAsRead = () => {
-  //   setUnreadNotifications(0);
-  // };
+  const renderNotifications = () => {
+    if (notifications.length === 0) {
+      return <p>No notifications</p>;
+    }
 
-  // const deleteAllMessages = () => {
-    
-  // };
+    return (
+      <ul>
+        {notifications.map((notification, index) => (
+          <li className='messages-white-box'>
+            <h4 key={index}>{notification.DateTime}</h4>
+            <span key={index}>{notification.DayTimeZone} {notification.Message}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const markAllAsRead = () => {
+    setUnreadNotifications(0);
+  };
+
+  const deleteAllMessages = () => {
+    setUnreadNotifications(0);
+    setNotifications([]);
+    localStorage.removeItem('notifications');
+  };
 
   return (
     <div>
@@ -165,16 +188,20 @@ const MainPage = () => {
         <div className='notifications-box'>
           <div class="notification" onClick={toggleNotifications}>
             <span>Inbox</span>
-            <span className="badge">{unreadNotifications}</span>
+            {unreadNotifications !== 0 &&
+              <span className="badge">{unreadNotifications}</span>}
           </div>
         </div>
         <div className='messages-box'>
           {showNotifications && (
             <div className="messages">
-              {/* {renderNotifications()}
-              {unreadNotifications !== 0 &&
-                <button onClick={markAllAsRead}>Mark all as read</button>}
-              <button onClick={deleteAllMessages}>Delete all</button> */}
+              {renderNotifications()}
+              <div className='buttons-messages'>
+                {unreadNotifications !== 0 &&
+                  <button onClick={markAllAsRead} className='all-read-button'>Mark all as read</button>}
+                {notifications.length !== 0 &&
+                  <button onClick={deleteAllMessages} className='all-delete-button'>Delete all</button>}
+              </div>
             </div>
           )}
         </div>
