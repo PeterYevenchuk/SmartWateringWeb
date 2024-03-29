@@ -1,37 +1,8 @@
-import { useNavigate } from 'react-router-dom';
 import Switch from 'react-switch';
 import React, { useEffect, useState } from 'react';
 import '../mainPageComponent/mainPageComponent.css'
 import axios from 'axios';
-
-const Footer = () => {
-  const navigate = useNavigate();
-
-  const handleSmartWateringClick = () => {
-    navigate('/home');
-  };
-
-  return (
-    <footer className='footer'>
-      <div>
-        <span className='general-name' onClick={handleSmartWateringClick}>SMART WATERING</span>
-        <span className='user-name'>Hello, Ім'я</span>
-      </div>
-    </footer>
-  );
-};
-
-const Menu = () => {
-  return (
-    <div className='menu'>
-      <div className='buttons-container'>
-          <button className='change-info-button'>Change infomation</button>
-          <button className='history-button'>History watering</button>
-          <button className='exit-button'>Exit</button>
-      </div>
-    </div>
-  );
-};
+import NavigatorMenu from '../navigatorComponent/navigatorComponent.js';
 
 const MainPage = () => {
   const [userData, setUserData] = useState(null);
@@ -98,27 +69,22 @@ const MainPage = () => {
       });
   };
 
-  useEffect(() => {
-    const handleServerEvents = (event) => {
-      const data = JSON.parse(event.data);
-      setNotifications(prevNotifications => [...prevNotifications, data]);
-      setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications + 1);
+  // useEffect(() => {
+  //   const handleServerEvents = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     setNotifications(prevNotifications => [...prevNotifications, data]);
+  //     setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications + 1);
 
-      localStorage.setItem('notifications', JSON.stringify([...notifications, data]));
-    };
+  //     localStorage.setItem('notifications', JSON.stringify([...notifications, data]));
+  //   };
   
-    const eventSource = new EventSource(`https://localhost:7265/events/14`); //change id
-    eventSource.onmessage = handleServerEvents;
-  
-    eventSource.onerror = (error) => {
-      console.error('Connection error:', error);
-      eventSource.close();
-    };
+  //   const eventSource = new EventSource(`https://localhost:7265/events`); //change id
+  //   eventSource.onmessage = handleServerEvents;
 
-    return () => {
-      eventSource.close();
-    };
-  }, [notifications]);
+  //   return () => {
+  //     eventSource.close();
+  //   };
+  // }, [notifications]);
 
   const renderNotifications = () => {
     if (notifications.length === 0) {
@@ -149,8 +115,7 @@ const MainPage = () => {
 
   return (
     <div>
-      <Footer />
-      <Menu />
+        <NavigatorMenu />
       <div className='general'>
         <div className='watering-system'>
           <div className='info'>
