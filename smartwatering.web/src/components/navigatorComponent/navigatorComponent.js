@@ -26,11 +26,15 @@ const Menu = () => {
     const handleHistoryClick = () => {
       navigate('/history');
     };
+
+    const handleChangeInfoClick = () => {
+      navigate('/information');
+    };
     
     return (
       <div className='menu'>
         <div className='buttons-container'>
-            <button className='change-info-button'>Change infomation</button>
+            <button className='change-info-button' onClick={handleChangeInfoClick}>Change infomation</button>
             <button className='history-button' onClick={handleHistoryClick}>History watering</button>
             <button className='exit-button'>Exit</button>
         </div>

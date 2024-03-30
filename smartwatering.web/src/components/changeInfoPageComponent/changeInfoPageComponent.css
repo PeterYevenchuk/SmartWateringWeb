@@ -1,0 +1,114 @@
+input {
+    width: 25%;
+    height: 25px;
+    margin-left: 40px;
+}
+
+input.name {
+    margin-left: 0;
+}
+
+input.newPassword {
+    margin-left: 0;
+}
+
+.change-info-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    right: 0;
+    position: absolute;
+    width: 80%;
+}
+
+.row1, .row2, .row3 {
+    width: -webkit-fill-available;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.saveInfo {
+    border: 1px solid #999999;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    height: 30px;
+    width: 100px;
+    margin-left: 40px;
+}
+
+.error {
+    border: 1px solid red;
+}
+
+.message-box-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Затемнений фон */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.message-box {
+    background-color: white;
+    padding: 20px;
+    border: 2px solid #999999;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 300px;
+}
+
+.message-text {
+    margin-bottom: 20px;
+}
+
+.ok-button {
+    border: 1px solid #999999;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    height: 30px;
+    width: 50px;
+}
+
+.message {
+    right: 0;
+    position: absolute;
+    width: 80%;
+    height: -webkit-fill-available;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.466);
+}
+
+.informationMessage {
+    background-color: lightyellow;
+    margin-left: 1px;
+    width: -webkit-fill-available;
+    padding: 20px;
+    border: 1px solid #999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.changeInfoMessage {
+    width: -webkit-fill-available;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cityChangeInfo, .generalChangeInfo {
+    border: 1px solid #999999;
+    width: 800px;
+    padding-top: 20px;
+    margin-bottom: 20px;
+    background-color: #adb4e340;
+    margin-left: 1px;
+}
