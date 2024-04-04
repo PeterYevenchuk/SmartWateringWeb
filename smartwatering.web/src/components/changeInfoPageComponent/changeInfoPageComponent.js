@@ -2,6 +2,8 @@ import NavigatorMenu from '../navigatorComponent/navigatorComponent.js';
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../changeInfoPageComponent/changeInfoPageComponent.css';
+import {jwtDecode} from 'jwt-decode';
+import Auth from '../AuthComponent/authComponent.js'
 
 const ChangeInfo = () => {
     const [name, setName] = useState('');
@@ -14,10 +16,13 @@ const ChangeInfo = () => {
     const [errorCity, setErrorCity] = useState(false);
     const [showInfoBox, setShowInfoBox] = useState(false);
     const [infoBoxText, setInfoBoxText] = useState('');
+    const accessToken = Auth();
+    const decodeToken = jwtDecode(accessToken);
+    const userId = decodeToken.nameid;
 
     const handleInfoSave = () => {
         const userInfo = {
-            id: 14, //change id
+            id: userId,
             name: name || null,
             surName: surName || null,
             email: email || null,
@@ -25,7 +30,11 @@ const ChangeInfo = () => {
             oldPassword: oldPassword || null
         };
 
-        axios.patch('https://localhost:44365/api/User/change-user-info', userInfo)
+        axios.patch('https://localhost:44365/api/User/change-user-info', userInfo, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            })
             .then(response => {
                 setError(false);
                 setShowInfoBox(true);
@@ -41,11 +50,15 @@ const ChangeInfo = () => {
 
     const handleCitySave = () => {
         const userInfo = {
-            userId: 14, //change id
+            userId: userId,
             cityName: cityName
         };
 
-        axios.patch('https://localhost:44365/api/User/change-user-city', userInfo)
+        axios.patch('https://localhost:44365/api/User/change-user-city', userInfo, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            })
             .then(response => {
                 setErrorCity(false);
                 setShowInfoBox(true);

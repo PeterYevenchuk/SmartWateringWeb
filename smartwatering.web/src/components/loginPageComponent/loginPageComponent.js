@@ -15,7 +15,7 @@ const LoginPage = () => {
             password: password,
         };
 
-        axios.post('http://localhost:44365/api/Auth/login', formData)
+        axios.post('https://localhost:44365/api/Auth/login', formData)
         .then(response => {
             const { accessToken, refreshToken } = response.data;
             localStorage.setItem('accessToken', accessToken);

@@ -21,7 +21,7 @@ const RegisterPage = () => {
             cityName: cityName
         };
 
-        axios.post('http://localhost:44365/api/User/create-user', formData)
+        axios.post('https://localhost:44365/api/User/create-user', formData)
         .then(response => {
             navigate('/');
         })

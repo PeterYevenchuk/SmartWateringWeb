@@ -78,7 +78,7 @@ function useAuth() {
 
     const refreshAccessToken = async (refreshToken, userId, accessToken) => {
         try {
-            const response = await axios.post('http://localhost:44365/api/Auth/refresh-token', {
+            const response = await axios.post('https://localhost:44365/api/Auth/refresh-token', {
                 refreshToken,
                 accessToken,
                 userId,
