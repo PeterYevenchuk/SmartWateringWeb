@@ -7,7 +7,7 @@ const History = () => {
     const [userData, setUserData] = useState([]);
 
     useEffect(() => {
-        axios.get('https://localhost:7265/api/User/user-sensor-information/14') //change id
+        axios.get('https://localhost:44365/api/User/user-sensor-information/14') //change id
           .then(response => {
             setUserData(response.data.reverse());
           })

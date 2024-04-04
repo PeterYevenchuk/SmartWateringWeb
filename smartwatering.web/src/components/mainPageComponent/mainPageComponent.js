@@ -26,7 +26,7 @@ const MainPage = () => {
 
   const handleSwitchChangeSprinkler = (checked) => {
     setIsCheckedSprinkler(checked);
-    axios.post(`https://localhost:7265/api/SmartWatering/set-status/${checked}/14`)//change id
+    axios.post(`https://localhost:44365/api/SmartWatering/set-status/${checked}/14`)//change id
       .then(
         handleReload
       )
@@ -36,7 +36,7 @@ const MainPage = () => {
   };
   const handleSwitchChangeAutoMode = (checked) => {
     setIsCheckedAutoMode(checked);
-    axios.post(`https://localhost:7265/api/SmartWatering/set-auto-mode/${checked}/14 `)//change id
+    axios.post(`https://localhost:44365/api/SmartWatering/set-auto-mode/${checked}/14 `)//change id
       .then(
         handleReload
       )
@@ -46,7 +46,7 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    axios.get('https://localhost:7265/api/User/user-information/14') //change id
+    axios.get('https://localhost:44365/api/User/user-information/14') //change id
       .then(response => {
         setUserData(response.data);
         setIsCheckedSprinkler(response.data.wateringInformation.sprinklerStatus);
@@ -58,7 +58,7 @@ const MainPage = () => {
   }, []);
 
   const handleReload = () => {
-    axios.get('https://localhost:7265/api/User/user-information/14') //change id
+    axios.get('https://localhost:44365/api/User/user-information/14') //change id
       .then(response => {
         setUserData(response.data);
         setIsCheckedSprinkler(response.data.wateringInformation.sprinklerStatus);

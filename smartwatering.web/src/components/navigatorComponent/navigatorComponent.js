@@ -5,16 +5,15 @@ import '../navigatorComponent/navigatorComponent.css';
 
 const Footer = () => {
     const navigate = useNavigate();
-  
     const handleSmartWateringClick = () => {
-      navigate('/');
+      navigate('/home');
     };
   
     return (
       <footer className='footer'>
         <div>
           <span className='general-name' onClick={handleSmartWateringClick}>SMART WATERING</span>
-          <span className='user-name'>Hello, Ім'я</span>
+          <span className='user-name'>Hello, userFullName</span>
         </div>
       </footer>
     );
@@ -30,13 +29,19 @@ const Menu = () => {
     const handleChangeInfoClick = () => {
       navigate('/information');
     };
+
+    const handleLogout = () => {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      navigate('/');
+    };
     
     return (
       <div className='menu'>
         <div className='buttons-container'>
             <button className='change-info-button' onClick={handleChangeInfoClick}>Change infomation</button>
             <button className='history-button' onClick={handleHistoryClick}>History watering</button>
-            <button className='exit-button'>Exit</button>
+            <button className='exit-button' onClick={handleLogout}>Exit</button>
         </div>
       </div>
     );

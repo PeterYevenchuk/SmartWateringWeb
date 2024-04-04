@@ -25,7 +25,7 @@ const ChangeInfo = () => {
             oldPassword: oldPassword || null
         };
 
-        axios.patch('https://localhost:7265/api/User/change-user-info', userInfo)
+        axios.patch('https://localhost:44365/api/User/change-user-info', userInfo)
             .then(response => {
                 setError(false);
                 setShowInfoBox(true);
@@ -45,7 +45,7 @@ const ChangeInfo = () => {
             cityName: cityName
         };
 
-        axios.patch('https://localhost:7265/api/User/change-user-city', userInfo)
+        axios.patch('https://localhost:44365/api/User/change-user-city', userInfo)
             .then(response => {
                 setErrorCity(false);
                 setShowInfoBox(true);
