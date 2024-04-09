@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import '../mainPageComponent/mainPageComponent.css'
 import axios from 'axios';
 import NavigatorMenu from '../navigatorComponent/navigatorComponent.js';
+import Auth from '../AuthComponent/authComponent.js'
+import {jwtDecode} from 'jwt-decode';
 
 const MainPage = () => {
   const [userData, setUserData] = useState(null);
@@ -10,7 +12,13 @@ const MainPage = () => {
   const [isCheckedAutoMode, setIsCheckedAutoMode] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [availableSprinklers, setAvailableSprinklers] = useState([]);
+  const [sprinklers, setSprinklers] = useState([]);
+  const [showSprinklerDropdown, setShowSprinklerDropdown] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const accessToken = Auth();
+  const decodeToken = jwtDecode(accessToken);
+  const userId = decodeToken.nameid;
 
   useEffect(() => {
     const savedNotifications = localStorage.getItem('notifications');
@@ -20,13 +28,35 @@ const MainPage = () => {
     }
   }, []);
 
+  const fetchUserAvailableSprinklers = () => {
+    axios.get(`https://localhost:44365/api/User/user-available-sprinklers/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(response => {
+      setSprinklers(response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching user available sprinklers:', error);
+    });
+  };
+
+  useEffect(() => {
+    fetchUserAvailableSprinklers();
+  }, []);
+
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
   };
 
   const handleSwitchChangeSprinkler = (checked) => {
     setIsCheckedSprinkler(checked);
-    axios.post(`https://localhost:44365/api/SmartWatering/set-status/${checked}/14`)//change id
+    axios.post(`https://localhost:44365/api/SmartWatering/set-status/${checked}/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      })
       .then(
         handleReload
       )
@@ -36,7 +66,11 @@ const MainPage = () => {
   };
   const handleSwitchChangeAutoMode = (checked) => {
     setIsCheckedAutoMode(checked);
-    axios.post(`https://localhost:44365/api/SmartWatering/set-auto-mode/${checked}/14 `)//change id
+    axios.post(`https://localhost:44365/api/SmartWatering/set-auto-mode/${checked}/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      })
       .then(
         handleReload
       )
@@ -46,7 +80,11 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    axios.get('https://localhost:44365/api/User/user-information/14') //change id
+    axios.get(`https://localhost:44365/api/User/user-information/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      })
       .then(response => {
         setUserData(response.data);
         setIsCheckedSprinkler(response.data.wateringInformation.sprinklerStatus);
@@ -58,7 +96,11 @@ const MainPage = () => {
   }, []);
 
   const handleReload = () => {
-    axios.get('https://localhost:44365/api/User/user-information/14') //change id
+    axios.get(`https://localhost:44365/api/User/user-information/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      })
       .then(response => {
         setUserData(response.data);
         setIsCheckedSprinkler(response.data.wateringInformation.sprinklerStatus);
@@ -67,6 +109,61 @@ const MainPage = () => {
       .catch(error => {
         console.error('Error fetching user data:', error);
       });
+  };
+
+  const handleDeleteSprinkler = (sprinklerId) => {
+    axios.delete(`https://localhost:44365/api/SmartWatering/delete-sprinkler/${sprinklerId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      })
+      .then(response => {
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error('Error delete sprinkler:', error);
+      });
+  };
+
+  const fetchSprinklers = () => {
+    axios.get('https://localhost:44365/api/SmartWatering/available-sprinklers', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(response => {
+      setAvailableSprinklers(response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching sprinklers:', error);
+    });
+  };
+
+  useEffect(() => {
+    fetchSprinklers();
+  }, []);
+
+  const toggleSprinklerDropdown = () => {
+    setShowSprinklerDropdown(!showSprinklerDropdown);
+  };
+
+  const handleAddSprinkler = (sprinklerName) => {
+    const sprinklerData = {
+      userId: userId,
+      sprinklerNameId: sprinklerName
+    };
+  
+    axios.post('https://localhost:44365/api/SmartWatering/set-sprinkler', sprinklerData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(response => {
+      window.location.reload();
+    })
+    .catch(error => {
+      console.error('Error adding sprinkler:', error);
+    });
   };
 
   // useEffect(() => {
@@ -103,6 +200,8 @@ const MainPage = () => {
     );
   };
 
+//add 1 read message
+
   const markAllAsRead = () => {
     setUnreadNotifications(0);
   };
@@ -117,38 +216,56 @@ const MainPage = () => {
     <div>
         <NavigatorMenu />
       <div className='general'>
-        <div className='watering-system'>
-          <div className='info'>
-            <span className='turn-on'>Sprinkler status: {userData && userData.wateringInformation ? (userData.wateringInformation.sprinklerStatus ? 'on' : 'off') : 'not available'}.</span>
-            <span className='humidity-level'>Humidity: {userData && userData.wateringInformation ? (userData.wateringInformation.humidityData) : 'not available'}%.</span>
-          </div>
-          <div className='switches'>
-            <div className='status-sprinkler'>
-              <span>Turn-on/off sprinkler</span>
-              <Switch
-                checked={isCheckedSprinkler}
-                onChange={handleSwitchChangeSprinkler}
-                onColor="#007bff"
-                offColor="#ccc"
-                checkedIcon={false}
-                uncheckedIcon={false}
-                borderRadius={0}
-              />
+        {sprinklers.map(sprinkler => (
+          <div className='watering-system' key={sprinkler.id}>
+            <div className='info'>
+              <h3 className='name'>Sprinkler: {sprinkler.sprinklerNameId}</h3>
+              <span className='turn-on'>Sprinkler status: {userData && userData.wateringInformation ? (userData.wateringInformation.sprinklerStatus ? 'on' : 'off') : 'not available'}.</span>
+              <span className='humidity-level'>Humidity: {userData && userData.wateringInformation ? (userData.wateringInformation.humidityData) : 'not available'}%.</span>
             </div>
-            <div className='status-auto-mode'>
-              <span>Turn-on/off auto mode</span>
-              <Switch
-                checked={isCheckedAutoMode}
-                onChange={handleSwitchChangeAutoMode}
-                onColor="#007bff"
-                offColor="#ccc"
-                checkedIcon={false}
-                uncheckedIcon={false}
-                borderRadius={0}
-              />
+            <div className='switches'>
+              <div className='status-sprinkler'>
+                <span>Turn-on/off sprinkler</span>
+                <Switch
+                  checked={isCheckedSprinkler}
+                  onChange={handleSwitchChangeSprinkler}
+                  onColor="#007bff"
+                  offColor="#ccc"
+                  checkedIcon={false}
+                  uncheckedIcon={false}
+                  borderRadius={0}
+                />
+              </div>
+              <div className='status-auto-mode'>
+                <span>Turn-on/off auto mode</span>
+                <Switch
+                  checked={isCheckedAutoMode}
+                  onChange={handleSwitchChangeAutoMode}
+                  onColor="#007bff"
+                  offColor="#ccc"
+                  checkedIcon={false}
+                  uncheckedIcon={false}
+                  borderRadius={0}
+                />
+              </div>
+              <button className='refresh-data' onClick={handleReload}>Refresh data</button>
+              <button className='delete-data' onClick={() => handleDeleteSprinkler(sprinkler.id)}>Delete</button>
             </div>
-            <button className='refresh-data' onClick={handleReload}>Refresh data</button>
           </div>
+        ))}
+        <div className='add-new-sprinkler-box'>
+          <button className='add-new-sprinkler-button' onClick={toggleSprinklerDropdown}>
+              <p>Add sprinkler</p>
+          </button>
+          {showSprinklerDropdown && (
+            <div className="sprinkler-dropdown">
+              <ul>
+                {availableSprinklers.map(sprinkler => (
+                  <li key={sprinkler} onClick={() => handleAddSprinkler(sprinkler)}>{sprinkler}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
         <div className='notifications-box'>
           <div class="notification" onClick={toggleNotifications}>

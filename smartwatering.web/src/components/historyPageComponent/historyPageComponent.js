@@ -28,7 +28,7 @@ const History = () => {
 return (
     <div>
         <NavigatorMenu />
-        <div className='general'>
+        <div className='general-history'>
             <div className='table-container'>
                 <table>
                     <thead>

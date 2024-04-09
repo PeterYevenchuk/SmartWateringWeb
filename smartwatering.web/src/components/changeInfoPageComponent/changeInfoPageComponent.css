@@ -1,15 +1,8 @@
 input {
     width: 25%;
     height: 25px;
-    margin-left: 40px;
-}
-
-input.name {
-    margin-left: 0;
-}
-
-input.newPassword {
-    margin-left: 0;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .change-info-container {
@@ -35,7 +28,8 @@ input.newPassword {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     height: 30px;
     width: 100px;
-    margin-left: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .error {
@@ -106,7 +100,7 @@ input.newPassword {
 
 .cityChangeInfo, .generalChangeInfo {
     border: 1px solid #999999;
-    width: 800px;
+    width: 80%;
     padding-top: 20px;
     margin-bottom: 20px;
     background-color: #adb4e340;
