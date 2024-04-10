@@ -23,8 +23,10 @@ const MainPage = () => {
   useEffect(() => {
     const savedNotifications = localStorage.getItem('notifications');
     if (savedNotifications) {
-      setNotifications(JSON.parse(savedNotifications));
-      setUnreadNotifications(JSON.parse(savedNotifications).length);
+      const parsedNotifications = JSON.parse(savedNotifications);
+      setNotifications(parsedNotifications);
+      const unreadCount = parsedNotifications.filter(notification => !notification.isRead).length;
+      setUnreadNotifications(unreadCount);
     }
   }, []);
 
@@ -166,22 +168,26 @@ const MainPage = () => {
     });
   };
 
-  // useEffect(() => {
-  //   const handleServerEvents = (event) => {
-  //     const data = JSON.parse(event.data);
-  //     setNotifications(prevNotifications => [...prevNotifications, data]);
-  //     setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications + 1);
-
-  //     localStorage.setItem('notifications', JSON.stringify([...notifications, data]));
-  //   };
+  useEffect(() => {
+    const handleServerEvents = (event) => {
+      const data = JSON.parse(event.data);
+      const userNotification = data.find(i => Number(i.UserId) === Number(userId));
+      if (userNotification) {
+        userNotification.isRead = false;
+        console.log(userNotification);
+        setNotifications(prevNotifications => [...prevNotifications, userNotification]);
+        setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications + 1);
+        localStorage.setItem('notifications', JSON.stringify([...notifications, userNotification]));
+      }
+    };
   
-  //   const eventSource = new EventSource(`https://localhost:7265/events`); //change id
-  //   eventSource.onmessage = handleServerEvents;
+    const eventSource = new EventSource(`https://localhost:44365/events`);
+    eventSource.onmessage = handleServerEvents;
 
-  //   return () => {
-  //     eventSource.close();
-  //   };
-  // }, [notifications]);
+    return () => {
+      eventSource.close();
+    };
+  }, [notifications]);
 
   const renderNotifications = () => {
     if (notifications.length === 0) {
@@ -194,16 +200,30 @@ const MainPage = () => {
           <li className='messages-white-box'>
             <h4 key={index}>{notification.DateTime}</h4>
             <span key={index}>{notification.DayTimeZone} {notification.Message}</span>
+            {!notification.isRead && (
+              <button className='read-message' onClick={() => markAsRead(index)}>Mark as read</button>
+            )}
           </li>
         ))}
       </ul>
     );
   };
 
-//add 1 read message
+  const markAsRead = (index) => {
+    const updatedNotifications = [...notifications];
+    updatedNotifications[index].isRead = true;
+    setNotifications(updatedNotifications);
+    setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications - 1);
+    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+  };
 
   const markAllAsRead = () => {
+    const updatedNotifications = notifications.map(notification => {
+      return { ...notification, isRead: true };
+    });
+    setNotifications(updatedNotifications);
     setUnreadNotifications(0);
+    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
   };
 
   const deleteAllMessages = () => {
@@ -261,7 +281,7 @@ const MainPage = () => {
             <div className="sprinkler-dropdown">
               <ul>
                 {availableSprinklers.map(sprinkler => (
-                  <li key={sprinkler} onClick={() => handleAddSprinkler(sprinkler)}>{sprinkler}</li>
+                  <li className='sprinkler-dropdown-data' key={sprinkler} onClick={() => handleAddSprinkler(sprinkler)}>{sprinkler}</li>
                 ))}
               </ul>
             </div>
