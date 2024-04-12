@@ -54,7 +54,7 @@ function useAuth() {
         return timeToExpire <= 60000;
     };
 
-    useEffect(() => {
+    useEffect(() => {       
         const decodedToken = decodeToken(accessToken);
         if (!accessToken || !decodedToken || checkAccessToken(accessToken)) {
             localStorage.removeItem('accessToken');

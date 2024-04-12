@@ -24,7 +24,16 @@ const MainPage = () => {
     const savedNotifications = localStorage.getItem('notifications');
     if (savedNotifications) {
       const parsedNotifications = JSON.parse(savedNotifications);
-      setNotifications(parsedNotifications);
+
+    // хороша штука
+    const allNotifications = parsedNotifications.flatMap(notificationGroup => Object.values(notificationGroup));
+    console.log(allNotifications);
+
+    // не працює
+    const userNotifications = allNotifications.filter(notification => notification.userId === userId);
+
+    // додати сейв в локалку
+    setNotifications(userNotifications);
       const unreadCount = parsedNotifications.filter(notification => !notification.isRead).length;
       setUnreadNotifications(unreadCount);
     }
@@ -167,27 +176,6 @@ const MainPage = () => {
       console.error('Error adding sprinkler:', error);
     });
   };
-
-  useEffect(() => {
-    const handleServerEvents = (event) => {
-      const data = JSON.parse(event.data);
-      const userNotification = data.find(i => Number(i.UserId) === Number(userId));
-      if (userNotification) {
-        userNotification.isRead = false;
-        console.log(userNotification);
-        setNotifications(prevNotifications => [...prevNotifications, userNotification]);
-        setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications + 1);
-        localStorage.setItem('notifications', JSON.stringify([...notifications, userNotification]));
-      }
-    };
-  
-    const eventSource = new EventSource(`https://localhost:44365/events`);
-    eventSource.onmessage = handleServerEvents;
-
-    return () => {
-      eventSource.close();
-    };
-  }, [notifications]);
 
   const renderNotifications = () => {
     if (notifications.length === 0) {
