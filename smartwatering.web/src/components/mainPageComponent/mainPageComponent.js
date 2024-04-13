@@ -16,6 +16,7 @@ const MainPage = () => {
   const [sprinklers, setSprinklers] = useState([]);
   const [showSprinklerDropdown, setShowSprinklerDropdown] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [messagesRef, setMessagesRef] = useState(null);
   const accessToken = Auth();
   const decodeToken = jwtDecode(accessToken);
   const userId = decodeToken.nameid;
@@ -24,17 +25,26 @@ const MainPage = () => {
     const savedNotifications = localStorage.getItem('notifications');
     if (savedNotifications) {
       const parsedNotifications = JSON.parse(savedNotifications);
+      const userNotifications = parsedNotifications.filter(i => Number(i.userId) === Number(userId));
+      const storedMessages = localStorage.getItem('userNotifications');
+      let updatedMessages = [];
+      if (storedMessages) {
+        const parsedStoredMessages = JSON.parse(storedMessages);
+        updatedMessages = [...parsedStoredMessages, ...userNotifications.map(notification => ({ ...notification, isRead: false }))];
+      } else {
+        updatedMessages = userNotifications.map(notification => ({ ...notification, isRead: false }));
+      }
+      localStorage.setItem('userNotifications', JSON.stringify(updatedMessages));
+      localStorage.removeItem('notifications');
+    }
+  }, []);
 
-    // хороша штука
-    const allNotifications = parsedNotifications.flatMap(notificationGroup => Object.values(notificationGroup));
-    console.log(allNotifications);
-
-    // не працює
-    const userNotifications = allNotifications.filter(notification => notification.userId === userId);
-
-    // додати сейв в локалку
-    setNotifications(userNotifications);
-      const unreadCount = parsedNotifications.filter(notification => !notification.isRead).length;
+  useEffect(() => {
+    const savedUserNotifications = localStorage.getItem('userNotifications');
+    if (savedUserNotifications) {
+      const parsedUserNotifications = JSON.parse(savedUserNotifications);
+      setNotifications(parsedUserNotifications);
+      const unreadCount = parsedUserNotifications.filter(notification => !notification.isRead).length;
       setUnreadNotifications(unreadCount);
     }
   }, []);
@@ -186,23 +196,30 @@ const MainPage = () => {
       <ul>
         {notifications.map((notification, index) => (
           <li className='messages-white-box'>
-            <h4 key={index}>{notification.DateTime}</h4>
-            <span key={index}>{notification.DayTimeZone} {notification.Message}</span>
+            <h4 key={index}>{notification.dateTime}</h4>
+            <span key={index}>{notification.dayTimeZone} {notification.message}</span>
             {!notification.isRead && (
               <button className='read-message' onClick={() => markAsRead(index)}>Mark as read</button>
             )}
           </li>
         ))}
+        <li ref={setMessagesRef}></li>
       </ul>
     );
   };
+
+  useEffect(() => {
+    if (messagesRef && showNotifications) {
+      messagesRef.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [messagesRef]);
 
   const markAsRead = (index) => {
     const updatedNotifications = [...notifications];
     updatedNotifications[index].isRead = true;
     setNotifications(updatedNotifications);
     setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications - 1);
-    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+    localStorage.setItem('userNotifications', JSON.stringify(updatedNotifications));
   };
 
   const markAllAsRead = () => {
@@ -211,13 +228,13 @@ const MainPage = () => {
     });
     setNotifications(updatedNotifications);
     setUnreadNotifications(0);
-    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
+    localStorage.setItem('userNotifications', JSON.stringify(updatedNotifications));
   };
 
   const deleteAllMessages = () => {
     setUnreadNotifications(0);
     setNotifications([]);
-    localStorage.removeItem('notifications');
+    localStorage.removeItem('userNotifications');
   };
 
   return (

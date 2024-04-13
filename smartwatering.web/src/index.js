@@ -5,7 +5,11 @@ import App from './App';
 import { connection } from './service-worker';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-connection.start();
+if (connection.state === 'Disconnected') {
+  connection.start()
+    .then(() => console.log('Connected to SignalR server in service worker'))
+    .catch(err => console.error('Error connecting to SignalR server in service worker:', err));
+}
 root.render(
   <React.StrictMode>
     <App />
