@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../loginPageComponent/loginPageComponent.css';
@@ -8,6 +8,17 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        const token2 = localStorage.getItem('refreshToken');
+        if (token != null && token2 !== null){
+            navigate('/home');
+        }
+        else{
+            navigate('/');
+        }
+    });
 
     const handleLoginFormSubmit = () => {
         const formData = {

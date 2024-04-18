@@ -1,13 +1,16 @@
 import { HubConnectionBuilder } from '@microsoft/signalr';
-
+  
 let dataToSync = {};
 
+/* eslint-disable-next-line no-restricted-globals */
 self.addEventListener('install', () => {
 });
 
+/* eslint-disable-next-line no-restricted-globals */
 self.addEventListener('activate', () => {
 });
 
+/* eslint-disable-next-line no-restricted-globals */
 self.addEventListener('fetch', () => {
 });
 
@@ -26,9 +29,9 @@ connection.on('ReceiveMessage', message => {
   localStorage.setItem('notifications', JSON.stringify(updatedMessages));
 });
 
+/* eslint-disable-next-line no-restricted-globals */
 self.addEventListener('sync', function(event) {
   if (event.tag === 'syncData') {
-    const messagesToSync = Object.values(dataToSync);
     dataToSync = {};
   }
 });
