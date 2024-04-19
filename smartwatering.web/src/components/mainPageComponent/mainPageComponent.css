@@ -7,7 +7,7 @@ button {
     border: 0;
     height: 50px;
     cursor: pointer;
-    border-bottom: 2px solid #999999;
+    border-bottom: 2px solid #000000;
 }
 
 button:active {
@@ -16,6 +16,7 @@ button:active {
 
 li.sprinkler-dropdown-data {
     cursor: pointer;
+    margin: 5px;
 }
 
 li.sprinkler-dropdown-data:hover {
@@ -24,10 +25,14 @@ li.sprinkler-dropdown-data:hover {
 
 .watering-system {
     height: 120px;
-    background-color: #adb4e340;
-    border-bottom: 2px solid #999999;
+    background-color: #204d28d1;
+    border-bottom: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-top: 2px solid #000000;
     display: flex;
     align-items: center;
+    color: white;
+    margin-bottom: 10px;
 }
 
 .name {
@@ -57,26 +62,24 @@ li.sprinkler-dropdown-data:hover {
     margin-right: 20px;
 }
 
-.refresh-data {
-    border: 1px solid #999999;
+.refresh-icon {
+    color: #ffffff;
     margin-right: 20px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    height: 40px;
-    background-color: #2ea52e2b;
+    font-size: 25px;
+    cursor: pointer;
 }
 
-.delete-data {
-    border: 1px solid #999999;
+.delete-icon {
     margin-right: 20px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    height: 40px;
-    background-color: #ff5a5a6e;
+    color: #ac3e3e;
+    font-size: 25px;
+    cursor: pointer;
 }
 
 .notifications-box {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 30px;
+    right: 30px;
     max-height: calc(100vh - 40px);
 }
 
@@ -87,7 +90,7 @@ li.sprinkler-dropdown-data:hover {
     padding: 15px 26px;
     position: relative;
     display: inline-block;
-    border-radius: 2px;
+    border-radius: 5px;
     cursor: pointer;
     bottom: 0;
     right: 0;
@@ -115,17 +118,18 @@ li.sprinkler-dropdown-data:hover {
     flex-direction: column;
     width: 45%;
     right: 20px;
-    border: 2px solid #999999;
+    border: 2px solid #000000;
     padding: 10px;
-    background-color: #fdf6ebfb;
+    background-color: #fffffffb;
     max-height: 50%;
     overflow-y: auto;
+    border-radius: 5px;
 }
 
 .messages-white-box {
-    background-color: white;
+    background-color: #e5e5e5;
     padding: 5px;
-    border: 1px solid #999999;
+    border: 1px solid #000000;
     border-radius: 10px;
     margin-bottom: 10px;
     display: flex;
@@ -148,7 +152,7 @@ ul {
 
 .all-read-button, .all-delete-button {
     margin-left: 10px;
-    border: 1px solid #999999;
+    border: 1px solid #000000;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     height: 40px;
     background-color: #ff7d7dd1;
@@ -163,12 +167,13 @@ ul {
     width: 40%;
     height: 40px;
     background-color: #dddad43d;
-    border: 2px solid #999999;
+    border: 2px solid #000000;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     box-shadow: 0px 5px 8px rgb(0 0 0 / 25%);
+    border-radius: 5px;
 }
 
 .add-new-sprinkler-box {
@@ -190,10 +195,55 @@ ul {
 
 .read-message {
     width: 100px;
-    border: 1px solid #999999;
+    border: 1px solid #000000;
     margin: 10px;
     height: 30px;
     box-shadow: 0px 5px 8px rgb(0 0 0 / 25%);
     background-color: #f2fff4ba;
     border-radius: 5px;
+}
+
+h3.weather-name, h3.sprinkler-name {
+    margin: 0px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: x-large;
+    color: #23472a;
+}
+
+.weather-cards-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.weather-card {
+    border: 2px solid #8d8d8d;
+    border-radius: 5px;
+    background-color: #e7e7e7;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.weather-p {
+    margin: 2px;
+    font-size: 16px;
+}
+
+.weather-p-data {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 2px;
+}
+
+.weather-data-image {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
 }

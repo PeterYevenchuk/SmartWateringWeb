@@ -5,6 +5,8 @@ import axios from 'axios';
 import NavigatorMenu from '../navigatorComponent/navigatorComponent.js';
 import Auth from '../AuthComponent/authComponent.js'
 import {jwtDecode} from 'jwt-decode';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
 const MainPage = () => {
   const [userData, setUserData] = useState(null);
@@ -15,8 +17,10 @@ const MainPage = () => {
   const [availableSprinklers, setAvailableSprinklers] = useState([]);
   const [sprinklers, setSprinklers] = useState([]);
   const [showSprinklerDropdown, setShowSprinklerDropdown] = useState(false);
+  const [weatherData, setWeatherData] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [messagesRef, setMessagesRef] = useState(null);
+
   const accessToken = Auth();
   const decodeToken = jwtDecode(accessToken);
   const userId = decodeToken.nameid;
@@ -115,6 +119,38 @@ const MainPage = () => {
         console.error('Error fetching user data:', error);
       });
   }, []);
+
+  useEffect(() => {
+    axios.get(`https://localhost:44365/api/Weather/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      })
+      .then(response => {
+        setWeatherData(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching weather data:', error);
+      });
+  }, []);
+
+  const renderWeatherCards = () => {
+    return weatherData.map((data, index) => (
+      <div className="weather-card" key={index}>
+        <p className='weather-p-data'>{data.dt_txt}</p>
+        <p className='weather-p'>Temperature: {data.main.temp}°C.</p>
+        <p className='weather-p'>Feels like: {data.main.feels_like}°C.</p>
+        <p className='weather-p'>Humidity: {data.main.humidity}%.</p>
+        <p className='weather-p'>Wind: {data.wind.speed} m/s.</p>
+        <p className='weather-p'>Clouds: {data.clouds.all}%.</p>
+        <p className='weather-p'>Weather: {data.weather[0].main}.</p>
+        <div className='weather-data-image'>
+          <img src={`https://openweathermap.org/img/wn/${data.weather[0].icon}.png`} alt="Weather icon" />
+          <p className='weather-p'> - {data.weather[0].description}.</p>
+        </div>
+      </div>
+    ));
+  };
 
   const handleReload = () => {
     axios.get(`https://localhost:44365/api/User/user-information/${userId}`, {
@@ -241,6 +277,13 @@ const MainPage = () => {
     <div>
         <NavigatorMenu />
       <div className='general'>
+      <div className="weather-container">
+        <h3 className='weather-name'>Today weather forecast in {userData ? (userData.city) : 'not available'}</h3>
+        <div className="weather-cards-container">
+          {renderWeatherCards()}
+        </div>
+      </div>
+        <h3 className='sprinkler-name'>Sprinklers</h3>
         {sprinklers.map(sprinkler => (
           <div className='watering-system' key={sprinkler.id}>
             <div className='info'>
@@ -273,8 +316,9 @@ const MainPage = () => {
                   borderRadius={0}
                 />
               </div>
-              <button className='refresh-data' onClick={handleReload}>Refresh data</button>
-              <button className='delete-data' onClick={() => handleDeleteSprinkler(sprinkler.id)}>Delete</button>
+              <FontAwesomeIcon icon={faSyncAlt} className="refresh-icon" onClick={handleReload} />
+              <FontAwesomeIcon icon={faTrash} className="delete-icon" onClick={() => handleDeleteSprinkler(sprinkler.id)} />
+
             </div>
           </div>
         ))}

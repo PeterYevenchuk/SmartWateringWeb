@@ -12,11 +12,8 @@ const LoginPage = () => {
     useEffect(() => {
         const token = localStorage.getItem('accessToken');
         const token2 = localStorage.getItem('refreshToken');
-        if (token != null && token2 !== null){
+        if (token !== null && token2 !== null){
             navigate('/home');
-        }
-        else{
-            navigate('/');
         }
     });
 
