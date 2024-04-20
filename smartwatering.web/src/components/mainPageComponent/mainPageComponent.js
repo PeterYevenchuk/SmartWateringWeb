@@ -26,32 +26,23 @@ const MainPage = () => {
   const userId = decodeToken.nameid;
 
   useEffect(() => {
-    const savedNotifications = localStorage.getItem('notifications');
-    if (savedNotifications) {
-      const parsedNotifications = JSON.parse(savedNotifications);
-      const userNotifications = parsedNotifications.filter(i => Number(i.userId) === Number(userId));
-      const storedMessages = localStorage.getItem('userNotifications');
-      let updatedMessages = [];
-      if (storedMessages) {
-        const parsedStoredMessages = JSON.parse(storedMessages);
-        updatedMessages = [...parsedStoredMessages, ...userNotifications.map(notification => ({ ...notification, isRead: false }))];
-      } else {
-        updatedMessages = userNotifications.map(notification => ({ ...notification, isRead: false }));
-      }
-      localStorage.setItem('userNotifications', JSON.stringify(updatedMessages));
-      localStorage.removeItem('notifications');
-    }
+    userMessages();
   }, []);
 
-  useEffect(() => {
-    const savedUserNotifications = localStorage.getItem('userNotifications');
-    if (savedUserNotifications) {
-      const parsedUserNotifications = JSON.parse(savedUserNotifications);
-      setNotifications(parsedUserNotifications);
-      const unreadCount = parsedUserNotifications.filter(notification => !notification.isRead).length;
-      setUnreadNotifications(unreadCount);
-    }
-  }, []);
+  const userMessages = () => {
+    axios.get(`https://localhost:44365/api/Messages/user-messages/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      })
+      .then(response => {
+        setNotifications(response.data.messages);
+        setUnreadNotifications(response.data.countUnRead)
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+  };
 
   const fetchUserAvailableSprinklers = () => {
     axios.get(`https://localhost:44365/api/User/user-available-sprinklers/${userId}`, {
@@ -235,7 +226,10 @@ const MainPage = () => {
             <h4 key={index}>{notification.dateTime}</h4>
             <span key={index}>{notification.dayTimeZone} {notification.message}</span>
             {!notification.isRead && (
-              <button className='read-message' onClick={() => markAsRead(index)}>Mark as read</button>
+              <div className='messages-buttons'>
+                <button className='read-message' onClick={() => markAsRead(index)}>Mark as read</button>
+                <button className='delete-message' onClick={() => deleteMessage(index)}>Delete</button>
+              </div>
             )}
           </li>
         ))}
@@ -255,7 +249,14 @@ const MainPage = () => {
     updatedNotifications[index].isRead = true;
     setNotifications(updatedNotifications);
     setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications - 1);
-    localStorage.setItem('userNotifications', JSON.stringify(updatedNotifications));
+    axios.patch(`https://localhost:44365/api/Messages/read-message/${updatedNotifications[index].id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .catch(error => {
+      console.error('Error adding sprinkler:', error);
+    });
   };
 
   const markAllAsRead = () => {
@@ -264,13 +265,44 @@ const MainPage = () => {
     });
     setNotifications(updatedNotifications);
     setUnreadNotifications(0);
-    localStorage.setItem('userNotifications', JSON.stringify(updatedNotifications));
+    axios.patch(`https://localhost:44365/api/Messages/read-all-messages/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .catch(error => {
+      console.error('Error adding sprinkler:', error);
+    });
   };
 
   const deleteAllMessages = () => {
     setUnreadNotifications(0);
     setNotifications([]);
-    localStorage.removeItem('userNotifications');
+    axios.delete(`https://localhost:44365/api/Messages/delete-all-message/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .catch(error => {
+      console.error('Error adding sprinkler:', error);
+    });
+  };
+
+  const deleteMessage = (index) => {
+    const updatedNotifications = [...notifications];
+    setNotifications(updatedNotifications);
+    setUnreadNotifications(prevUnreadNotifications => prevUnreadNotifications - 1);
+    axios.delete(`https://localhost:44365/api/Messages/delete-message/${updatedNotifications[index].id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then(response => {
+      userMessages();
+    })
+    .catch(error => {
+      console.error('Error adding sprinkler:', error);
+    });
   };
 
   return (

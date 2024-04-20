@@ -113,11 +113,11 @@ li.sprinkler-dropdown-data:hover {
 
 .messages {
     position: fixed;
-    bottom: 80px;
+    bottom: 95px;
     display: flex;
     flex-direction: column;
     width: 45%;
-    right: 20px;
+    right: 30px;
     border: 2px solid #000000;
     padding: 10px;
     background-color: #fffffffb;
@@ -193,7 +193,7 @@ ul {
     height: -webkit-fill-available;
 }
 
-.read-message {
+.read-message, .delete-message {
     width: 100px;
     border: 1px solid #000000;
     margin: 10px;
@@ -201,6 +201,11 @@ ul {
     box-shadow: 0px 5px 8px rgb(0 0 0 / 25%);
     background-color: #f2fff4ba;
     border-radius: 5px;
+}
+
+.delete-message {
+    width: 60px;
+    background-color: #ff7d7dd1;
 }
 
 h3.weather-name, h3.sprinkler-name {

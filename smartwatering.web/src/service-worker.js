@@ -24,9 +24,6 @@ connection.start()
 
 connection.on('ReceiveMessage', message => {
   dataToSync[message.id] = message;
-  const storedMessages = JSON.parse(localStorage.getItem('notifications')) || [];
-  const updatedMessages = [...storedMessages, ...message];
-  localStorage.setItem('notifications', JSON.stringify(updatedMessages));
 });
 
 /* eslint-disable-next-line no-restricted-globals */
