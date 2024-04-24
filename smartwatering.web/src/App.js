@@ -5,6 +5,12 @@ import LoginPage from './components/loginPageComponent/loginPageComponent.js';
 import RegisterPage from './components/registerPageComponent/registerPageComponent.js';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+Notification.requestPermission().then(permission => {
+  if (permission === 'granted') {
+    console.log('Notification permission granted.');
+  }
+});
+
 function App() {
   return (
     <Router>
