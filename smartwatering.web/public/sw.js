@@ -46,4 +46,25 @@ self.addEventListener('notificationclick', event => {
   );
 });
 
+self.addEventListener('activate', event => {
+  console.log('Service worker activated');
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+setInterval(() => {
+  fetch('https://localhost:44365/api/Auth/ping', {
+    method: 'GET',
+    mode: 'no-cors',
+  })
+  .then(response => {
+    console.log('Ping sent successfully');
+  })
+  .catch(error => {
+    console.error('Error sending ping:', error);
+  });
+}, 30 * 1000);
+
 console.warn("ws file in public folder");
