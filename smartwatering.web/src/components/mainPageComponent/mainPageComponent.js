@@ -224,7 +224,7 @@ const MainPage = () => {
         {notifications.map((notification, index) => (
           <li className='messages-white-box'>
             <h4 key={index}>{notification.dateTime}</h4>
-            <span key={index}>{notification.dayTimeZone} {notification.message}</span>
+            <span key={index}>{notification.dayTime} {notification.message}</span>
             {!notification.isRead && (
               <div className='messages-buttons'>
                 <button className='read-message' onClick={() => markAsRead(index)}>Mark as read</button>

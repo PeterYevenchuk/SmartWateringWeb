@@ -21,7 +21,12 @@ export default function swDev() {
       });
     };
   
-    registerServiceWorker();
+    navigator.serviceWorker.getRegistration().then((registration) => {
+      if (!registration || !registration.active) {
+        console.log('Service worker is not running, registering...');
+        registerServiceWorker();
+      }
+    });
   
     const intervalId = setInterval(checkServiceWorkerState, 30000);
   
